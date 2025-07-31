@@ -40,13 +40,13 @@ def load_data_reviews():
         review_url = 'https://huggingface.co/datasets/Pauleera/Goodreads-Book-Reviews/resolve/main/reviews_reduced.csv'
         with st.spinner("📥 Loading review database..."):
             review_response = requests.get(review_url)
-            review = pd.read_csv(StringIO(review_response.text))
+            reviews = pd.read_csv(StringIO(review_response.text))
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
         return pd.DataFrame()
     
     reviews['date_added'] = pd.to_datetime(reviews['date_added']).dt.date
-    reviews['work_id'] = reviews['work_id'].astype(str)  # Convertir una sola vez
+    reviews['work_id'] = reviews['work_id'].astype(str) 
     return reviews
 
 @st.cache_data(show_spinner=False)
@@ -372,3 +372,7 @@ with col3:
 with col4:
     if st.button("🔄 Refresh App"):
         st.rerun()
+
+st.write("---") 
+st.write("Desarrollado por Paula Mancilla | [LinkedIn](https://www.linkedin.com/in/paulafma/)")
+    
