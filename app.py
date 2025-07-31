@@ -94,7 +94,8 @@ def init_session_state():
         "recommendations": None,
         "show_recommendations": False,
         "search_query": "",
-        "last_search_time": 0
+        "last_search_time": 0,
+        "recommendations_list_to_ignore" : []
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -233,7 +234,14 @@ with tab2:
         with col2:
             if st.button("🔄 New Recommendations", use_container_width=True):
                 st.session_state.show_recommendations = False
+                st.session_state.recommendations_list_to_ignore.append(st.session_state.recommendations)
                 st.session_state.recommendations = None
+                with st.spinner("🤖 Creating a new personalized recommendations..."):
+                    st.session_state.recommendations = get_recommendations(st.session_state.favorites, works, books_to_ignore_list = st.session_state.recommendations_list_to_ignore)
+                    st.session_state.show_recommendations = True
+                st.success("Recommendations generated!")
+                st.rerun()
+
     else:
         st.warning("Add some favorite books first from the Search tab!")
     
@@ -374,5 +382,5 @@ with col4:
         st.rerun()
 
 st.write("---") 
-st.write("Desarrollado por Paula Mancilla | [LinkedIn](https://www.linkedin.com/in/paulafma/)")
+st.write("Developed by Paula Mancilla 🌸 [LinkedIn](https://www.linkedin.com/in/paulafma/)")
     

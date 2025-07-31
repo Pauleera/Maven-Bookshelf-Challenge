@@ -4,14 +4,29 @@ from collections import Counter
 from sklearn.preprocessing import MinMaxScaler
 
 
-def get_recommendations(favorite_books_list, works_df, top_n=10):
+def get_recommendations(favorite_books_list, works_df, top_n=10, books_to_ignore_list = None):
 
+    print(f"Libros para ignorar:{books_to_ignore_list} -")
+    
     print(f"Libro fav: {favorite_books_list} -")
     
     # Extraer solo los work_ids y convertir a enteros
     favorite_ids = [int(book_id) for _, book_id in favorite_books_list]
     print(f"Libro fav ID: {favorite_ids} -")
-    print(f"analizando {len(favorite_ids)} libros favoritos...")
+
+    ignored_ids = []
+    if books_to_ignore_list:
+        try: 
+            books_to_ignore_df = pd.concat(books_to_ignore_list, ignore_index=True)
+            ignored_ids = books_to_ignore_df['work_id'].unique()
+            ignored_ids = books_to_ignore_df['work_id'].astype(int).tolist()
+        except Exception as e:
+            print(f"Error al procesar los libros a ignorar: {e}")
+
+
+    print(f"Libros ignorar ID: {ignored_ids}")
+    
+    print(f"analizando {len(favorite_ids)} libros favoritos e ignorando {len(ignored_ids)} títulos... ")
     works_df['work_id'] = works_df['work_id'].astype(int)
     # Obtener información de libros favoritos
     fav_books = works_df[works_df['work_id'].isin(favorite_ids)].copy()
@@ -65,6 +80,7 @@ def get_recommendations(favorite_books_list, works_df, top_n=10):
     
     # 3. PREPARAR CANDIDATOS
     candidates = works_df[~works_df['work_id'].isin(favorite_ids)].copy()
+    candidates = candidates[~candidates['work_id'].isin(ignored_ids)].copy() 
     candidates = candidates.dropna(subset=['avg_rating', 'ratings_count'])
     
     # Filtrar libros con muy pocas reseñas (ruido)
