@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import sys
 import traceback
+import requests
+from io import StringIO
+
 
 # Configuración básica
 st.set_page_config(
@@ -32,7 +35,18 @@ def main():
             st.error(f"❌ Error in recommend.py: {e}")
         
         # Test carga de datos (comentado por ahora)
-        st.info("🔄 Data loading test disabled for debugging")
+        st.info("Data loading test for debugging")
+        try: 
+            review_url = 'https://huggingface.co/datasets/Pauleera/Goodreads-Book-Reviews/resolve/main/goodreads_reviews.csv'
+            with st.spinner("📥 Loading review database..."):
+                review_response = requests.get(review_url)
+                review = pd.read_csv(StringIO(review_response.text))
+        except Exception as e:
+            st.error(f"Error loading data: {str(e)}")
+
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        return pd.DataFrame()
         
         # Test session state
         if "test" not in st.session_state:

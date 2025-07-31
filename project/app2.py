@@ -15,7 +15,7 @@ def load_data_works():
             works = pd.read_csv(StringIO(works_response.text))
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
-        return pd.DataFrame(), pd.DataFrame()
+        return pd.DataFrame()
 
     works['original_title'] = works['original_title'].fillna('').astype(str)
     works['author'] = works['author'].fillna('').astype(str)
@@ -43,7 +43,7 @@ def load_data_reviews():
             review = pd.read_csv(StringIO(review_response.text))
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
-        return pd.DataFrame(), pd.DataFrame()
+        return pd.DataFrame()
     
     reviews['date_added'] = pd.to_datetime(reviews['date_added']).dt.date
     reviews['work_id'] = reviews['work_id'].astype(str)  # Convertir una sola vez
