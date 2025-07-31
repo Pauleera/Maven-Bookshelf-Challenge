@@ -1,0 +1,6 @@
+streamlit
+pandas
+numpy
+requests
+scikit-learn
+huggingface-hub>=0.16.0

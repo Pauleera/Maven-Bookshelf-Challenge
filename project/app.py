@@ -2,11 +2,21 @@ import streamlit as st
 import pandas as pd
 from utils.recommend import get_recommendations
 import time
+import requests
+from io import StringIO
 
 
 @st.cache_data
 def load_data_works():
-    works = pd.read_csv('https://huggingface.co/datasets/Pauleera/Goodreads-Book-Reviews/resolve/main/goodreads_works.csv')
+    try:
+        works_url = 'https://huggingface.co/datasets/Pauleera/Goodreads-Book-Reviews/resolve/main/goodreads_works.csv'
+        with st.spinner("📥 Loading book database..."):
+            works_response = requests.get(works_url)
+            works = pd.read_csv(StringIO(works_response.text))
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        return pd.DataFrame(), pd.DataFrame()
+
     works['original_title'] = works['original_title'].fillna('').astype(str)
     works['author'] = works['author'].fillna('').astype(str)
     works['description'] = works['description'].fillna('').astype(str)
@@ -26,7 +36,15 @@ def load_data_works():
 
 @st.cache_data
 def load_data_reviews():
-    reviews = pd.read_csv('https://huggingface.co/datasets/Pauleera/Goodreads-Book-Reviews/resolve/main/goodreads_reviews.csv')
+    try: 
+        review_url = 'https://huggingface.co/datasets/Pauleera/Goodreads-Book-Reviews/resolve/main/goodreads_reviews.csv'
+        with st.spinner("📥 Loading review database..."):
+            review_response = requests.get(review_url)
+            review = pd.read_csv(StringIO(review_response.text))
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        return pd.DataFrame(), pd.DataFrame()
+    
     reviews['date_added'] = pd.to_datetime(reviews['date_added']).dt.date
     reviews['work_id'] = reviews['work_id'].astype(str)  # Convertir una sola vez
     return reviews
